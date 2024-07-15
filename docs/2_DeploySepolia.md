@@ -9,7 +9,7 @@ Sepoliaテストネットにデプロイするためには手数料となるSepo
 
 ### 1. **ChromeにMetamaskプラグインをインストール**:
    - [Metamaskの公式ウェブサイト](https://metamask.io/download.html)またはChromeウェブストアからMetamaskプラグインをダウンロードしてインストールします。
-   - Metamaskを開き、アカウントを作成します。アカウント作成時に表示されるmnemonic（12の単語）をメモしておきます。このmnemonicは後でHDWalletProviderの設定に使用します。
+   - Metamaskを開き、アカウントを作成します。アカウント作成後に秘密鍵を取得してメモしておきます。この秘密鍵は後でネットワーク情報の設定に使用します。
 
 ### 2. **SepoliaテストネットのfaucetからETHを入手**:
    - MetamaskでSepoliaテストネットを選択します。
@@ -17,51 +17,32 @@ Sepoliaテストネットにデプロイするためには手数料となるSepo
 
 ### 3. **Infura.ioのアカウントを作成**:
 - [Infura.io](https://infura.io/) にアクセスし、新しいアカウントを作成します。
-- アカウント作成後、Infuraダッシュボードで新しいプロジェクトを作成し、プロジェクトのエンドポイントURLをコピーします。
-  ![Infura Endpoints](images/infuraio_endpoints.png)
+- アカウント作成後、Infuraダッシュボードで新しいAPI Keyを作成してメモしておきます。このAPI Keyは後でネットワーク情報の設定に使用します。
 
-### 4. **truffle-config.jsonにSepoliaテストネットのネットワーク情報を追加**:
-   - `truffle-config.json` ファイルをエディタで開き、以下のようにSepoliaネットワークの設定を追加します。
-   - `module.export: `の前に HDWalletProviderの定義を追加
-   - `networks: `に`sepolia`のネットワーク設定を追加
-
-```javascript
-const HDWalletProvider = require('@truffle/hdwallet-provider');
-
-module.exports = {
-  // コメント部分なので省略...
-  networks: {
-    sepolia: {
-      provider: () => new HDWalletProvider(
-        "your mnemonic goes here", // ここにMetamaskのmnemonicを直接指定
-        "https://sepolia.infura.io/v3/<your-project-secret>"  // InfuraのSepoliaエンドポイントURLを指定
-      ),
-      network_id: 11155111,       // SepoliaのネットワークID
-      gas: 1000000,             // Gas limitを指定
-    },
-    // ↑のブロックをコピー＆ペーストして追加する。
-  },
-  // ...他のconfig設定
-};
+### 4. **hardhat.config.jsにSepoliaテストネットのネットワーク情報を設定**:
+- `.env`という名前の新しいファイルを作成し、以下の内容をコピーして貼り付けます。
+```bash
+$ touch .env
 ```
+```
+INFURA_API_KEY='your api key'
+PRIVATE_KEY='your private key'
+```
+- `.env`ファイルに、メモしておいたAPI Keyと秘密鍵を設定します。
 
-### 5. **truffleコマンドを用いてSepoliaにMyTokenをデプロイ**:
+### 5. **Hardhatコマンドを用いてSepoliaにMyTokenをデプロイ**:
  
 - ターミナルを開き、packages/contractsに移動します。
-- 以下のコマンドを実行して`@truffle/hdwallet-provider`モジュールをインストールします。
-- その次のコマンドでMyTokenをSepoliaテストネットにデプロイします。
+- 以下のコマンドを実行してMyTokenをSepoliaテストネットにデプロイします。
 
 ```bash
-$ yarn add --dev @truffle/hdwallet-provider
-$ yarn truffle migrate --network sepolia
+$ npx hardhat run scripts/deploy.js --network sepolia
 ```
 
-- ターミナルに表示されるログから、Transaction HashとContract Addressをメモしておく。
-
-![Deploy Log](images/deploy_sepolia_log.png)
+- ターミナルに表示されるログから、Contract Addressをメモしておく。
 
 ### 6. **etherscanで確認**:
-- [Sepolia Testnet Etherscan](https://sepolia.etherscan.io/)にアクセスし、Transaction HashまたはContract Addressを使ってデプロイメントを確認します。
+- [Sepolia Testnet Etherscan](https://sepolia.etherscan.io/)にアクセスし、Contract Addressを使ってデプロイメントを確認します。
 
 ![etherscan](images/sepolia_etherscan.png)
 

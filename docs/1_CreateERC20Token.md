@@ -1,100 +1,178 @@
 # 1: ERC20Token Contractの作成
 
-TruffleとOpenZeppelinを使用してERC20トークンを作成しする手順を説明します。また、作成したERC20トークンをtruffleから操作する方法も説明します。
+HardhatとOpenZeppelinを使用してERC20トークンを作成しする手順を説明します。また、作成したERC20トークンをHardhatから操作する方法も説明します。
+
+### 0. **開発環境のセットアップ:**
+
+0.1 **nvmのインストール:**
+
+[nvmのGithub](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) のインストール手順を参考に、各自の開発環境に応じて、nvmをインストールします。
+
+0.2 **node.jsのインストール:**
+```bash
+$ nvm install --lts
+$ npm install -g npm
+```
 
 ### 1. **プロジェクトのセットアップ:**
 
-1.1 **Truffleプロジェクトの初期化:**
+1.1 **Hardhatプロジェクトの初期化:**
 ```bash
 $ cd packages/contracts
-$ yarn truffle init -y .
+$ npm install --save-dev hardhat
+$ npm install --save-dev @nomicfoundation/hardhat-toolbox
 ```
 
 1.2 **OpenZeppelinのインストール:**
 ```bash
-$ yarn add @openzeppelin/contracts
+$ npm install --save-dev @openzeppelin/contracts
+```
+
+1.3 **その他ツールのインストール:**
+```bash
+$ npm install --save-dev dotenv
 ```
 
 ### 2. **ERC20トークンの作成:**
 
 2.1 **トークンコントラクトの作成:**
+
 `contracts/MyToken.sol`という名前の新しいファイルを作成し、以下の内容をコピーして貼り付けます。
+```bash
+$ mkdir contracts
+$ touch contracts/MyToken.sol
+```
 ```solidity
-pragma solidity ^0.8.0;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 contract MyToken is ERC20 {
+    address public owner;
     constructor(uint256 initialSupply) ERC20("MyToken", "MTK") {
-        _mint(msg.sender, initialSupply);
+        owner = msg.sender;
+        _mint(owner, initialSupply);
     }
 }
 ```
 
-### 3. **Migration ファイルの作成:**
+2.2 **トークンコントラクトのテスト:**
 
-3.1 **Migration ファイルの作成:**
-migrationファイルはcontractをEthereumネットワークにデプロイする手順を自動化し、かつ、どこまでデプロイしたかをtruffleが管理できる様にするための手順書です。
-
-`migrations/2_deploy_contracts.js`という名前の新しいファイルを作成し、以下の内容をコピーして貼り付けます。
-
+`test/MyToken.js`という名前の新しいファイルを作成し、以下の内容をコピーして貼り付けます。
+```bash
+$ mkdir test
+$ touch test/MyToken.js
+```
 ```javascript
-const MyToken = artifacts.require("MyToken");
+const { expect } = require("chai");
+const { ethers } = require("hardhat");
+const {
+    loadFixture
+} = require("@nomicfoundation/hardhat-toolbox/network-helpers");
 
-module.exports = function (deployer) {
-  deployer.deploy(MyToken, 1000000);
-};
+describe("Token contract", function () {
+    async function deployTokenFixture() {
+    const [owner, other] = await ethers.getSigners();
+    const ownerAddress = await owner.getAddress();
+    const otherAddress = await other.getAddress();
+    const initialSupply = 1000;
+
+    const myToken = await ethers.deployContract("MyToken", [initialSupply]);
+    await myToken.waitForDeployment();
+        const myTokenAddress = myToken.address;
+        return { myToken, myTokenAddress, initialSupply, owner, ownerAddress, other ,otherAddress };
+    }
+
+    describe("Deployment", function () {
+        it("Should mint owner 1000 tokens when deployed", async function () {
+            const { myToken, ownerAddress, initialSupply } = await loadFixture(deployTokenFixture);
+            const ownerBalance = await myToken.balanceOf(ownerAddress)
+            expect(ownerBalance).to.equal(initialSupply);
+        });
+        it("Should set the right owner", async function () {
+            const { myToken, ownerAddress } = await loadFixture(deployTokenFixture);
+            expect(await myToken.owner()).to.equal(ownerAddress);
+        });
+    });
+});
 ```
 
-### 4. **Truffle 開発ノードのセットアップとデプロイ:**
+以下のコマンドを実行してMyToken Contractのテストを実行します。
+```bash
+$ npx hardhat test
+```
+
+### 3. **デプロイスクリプトの作成:**
+
+3.1 **デプロイスクリプの作成:**
+
+`scripts/deploy.js`という名前の新しいファイルを作成し、以下の内容をコピーして貼り付けます。
+```bash
+$ mkdir scripts
+$ touch scripts/deploy.js
+```
+```javascript
+const { ethers } = require("hardhat");
+
+async function main() {
+    const myToken = await ethers.deployContract("MyToken", [1000000]);
+    await myToken.waitForDeployment();
+
+    console.log("MyToken deployed to:", await myToken.owner());
+}
+
+main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+});
+```
+
+### 4. **Hardhat開発ノードのセットアップとデプロイ:**
 
 4.1 **開発ノードの起動:**
 
-以下のコマンドを実行してTruffleに内蔵されているEthereumの開発用ノードを起動します。
-
-開発用ノードはGanacheという名前で、開発で利用するための便利な機能が実装されています。
+以下のコマンドを実行してHardhatに内蔵されているEthereumの開発用ノードを起動します。
 
 ```bash
-$ yarn truffle develop
+$ npx hardhat node
 ```
-
-以降は、truffle console上で実行する手順を示しています。
 
 4.2 **トークンのデプロイ:**
 
-以下のコマンドを実行して、MyToken Contractを開発サーバにデプロイします。この時実行される操作は、3.1.で作成したmigrationファイルに従い順次実行されています。
+別のターミナルで以下のコマンドを実行して、MyToken Contractを開発サーバにデプロイします。
 
 ```bash
-truffle(develop)> migrate
+npx hardhat run scripts/deploy.js --network localhost
 ```
 
-### 5. **トークンバランスの確認:**
+~~### 5. **トークンバランスの確認:**~~
 
-開発ノードに`MyToken`がデプロイされました。実際にデプロイされたContractを操作してみます。
-まずは、`MyToken`のデプロイアカウントである`accounts[0]`に初期のTokenが発行されていることを確認します。
+~~開発ノードに`MyToken`がデプロイされました。実際にデプロイされたContractを操作してみます。
+まずは、`MyToken`のデプロイアカウントである`accounts[0]`に初期のTokenが発行されていることを確認します。~~
 
-5.1 **バランスの確認:**
+~~5.1 **バランスの確認:**~~
 ```bash
 truffle(develop)> let instance = await MyToken.deployed()
 truffle(develop)> let balance = await instance.balanceOf(accounts[0])
 truffle(develop)> balance.toString()
 ```
 
-### 6. **トークンの送金とバランスの確認:**
+~~### 6. **トークンの送金とバランスの確認:**~~
 
-ここではMyTokenを別のアカウントに送金してみます。Truffleの開発ノードは初期状態で10個のアカウントが自動生成されます。
+~~ここではMyTokenを別のアカウントに送金してみます。Truffleの開発ノードは初期状態で10個のアカウントが自動生成されます。~~
 
-最初は0番目のアカウントのみが`MyToken`を持っているので、１番目のアカウントにも送金します。
+~~最初は0番目のアカウントのみが`MyToken`を持っているので、１番目のアカウントにも送金します。~~
 
-6.1 **トークンの送金:**
+~~6.1 **トークンの送金:**~~
 ```bash
 truffle(develop)> await instance.transfer(accounts[1], 1000)
 ```
 
-6.2 **バランスの確認:**
+~~6.2 **バランスの確認:**~~
 
-以下で実際に1番目のアカウントに`MyToken`が送金されたか確認します。
-0番目のアカウントの`MyToken`残高が減少し、1番目のアカウントの残高が増えていることを確認してください。
+~~以下で実際に1番目のアカウントに`MyToken`が送金されたか確認します。~~
+~~0番目のアカウントの`MyToken`残高が減少し、1番目のアカウントの残高が増えていることを確認してください。~~
 
 ```bash
 truffle(develop)> let balance0 = await instance.balanceOf(accounts[0])
@@ -103,7 +181,7 @@ truffle(develop)> balance0.toString()
 truffle(develop)> balance1.toString()
 ```
 
-これらの手順に従うことで、TruffleとOpenZeppelinを使用してERC20トークンを作成し、ローカルの開発ノードにデプロイし、トークンの送金とバランスの確認を行うことができます。
+~~これらの手順に従うことで、TruffleとOpenZeppelinを使用してERC20トークンを作成し、ローカルの開発ノードにデプロイし、トークンの送金とバランスの確認を行うことができます。~~
 
 next&gt;&gt; [2.SepoliaテストネットにContractをデプロイ](./2_DeploySepolia.md)
 
