@@ -1,10 +1,10 @@
 # Description
 EthereumのDappsを作成するための最低限のサンプルです。
 
-created at: 2023/10/25 
+created at: 2024/07/20 
 
 # Dependence
-- Truffle: https://trufflesuite.com/docs/truffle/
+- Hardhat: https://hardhat.org/
 - React: https://ja.legacy.reactjs.org/
 - Parcel: https://parceljs.org/
 
@@ -24,15 +24,16 @@ https://git-scm.com/download/linux
 2. Install NVM
 公式に従い以下のコマンドでインストール
 ```bash
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.5/install.sh | bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 ```
 
 詳細は公式を参照: https://github.com/nvm-sh/nvm#install--update-script 
 
-3. Install node v18.x LTS version
+3. Install node LTS version
 
 ```bash
-nvm install v18 --lts
+nvm install --lts
+npm install -g npm
 ```
 
 4. Install Yarn in global
@@ -44,7 +45,7 @@ npm install -g yarn
 5. Clone this repository
 このリポジトリをcloneします。  
 ```bash
-git clone https://github.com/nakajo2011/eth-dapp-sample.git
+git clone https://github.com/nabeo114/eth-dapp-sample.git
 ```
 
 6. Install dependencies
@@ -67,28 +68,28 @@ dapps作成手順は以下のドキュメントを参照ください。
 
 - [1.ERC20Token Contractの作成](docs/1_CreateERC20Token.md)
 
-# How to use implemented branch
-ContractとDappsをそれぞれ作成完了した時点のコードを以下の２つのbranchに保存しています。
+# ~~How to use implemented branch~~
+~~ContractとDappsをそれぞれ作成完了した時点のコードを以下の２つのbranchに保存しています。~~
 
-- 1_erc20token
-- 2_create_dapps
+- ~~1_erc20token~~
+- ~~2_create_dapps~~
 
-上記２つのリポジトリをチェックアウトして利用する方法を説明します。
+~~上記２つのリポジトリをチェックアウトして利用する方法を説明します。~~
 
-1. 既存リポジトリの変更点を全てクリア
+1. ~~既存リポジトリの変更点を全てクリア~~
 ```bash
 git reset HEAD --hard
 ```
 
-2. branchをチェックアウト
-指定したbranchに切り替えます。ここでは`1_erc20token`のbranchに切り替えています。
+2. ~~branchをチェックアウト~~
+~~指定したbranchに切り替えます。ここでは`1_erc20token`のbranchに切り替えています。~~
 
-`git checkout`の詳細は以下のドキュメントを参照 https://www.atlassian.com/ja/git/tutorials/using-branches/git-checkout
+~~`git checkout`の詳細は以下のドキュメントを参照 https://www.atlassian.com/ja/git/tutorials/using-branches/git-checkout~~
 ```bash
 git checkout -b 1_erc20token origin/1_erc20token
 ```
 
-3. 依存ライブラリの再インストール
+3. ~~依存ライブラリの再インストール~~
 ```bash
 yarn install
 ```

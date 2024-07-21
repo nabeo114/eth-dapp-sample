@@ -2,35 +2,22 @@
 
 HardhatとOpenZeppelinを使用してERC20トークンを作成しする手順を説明します。また、作成したERC20トークンをHardhatから操作する方法も説明します。
 
-### 0. **開発環境のセットアップ:**
-
-0.1 **nvmのインストール:**
-
-[nvmのGithub](https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating) のインストール手順を参考に、各自の開発環境に応じて、nvmをインストールします。
-
-0.2 **node.jsのインストール:**
-```bash
-$ nvm install --lts
-$ npm install -g npm
-```
-
 ### 1. **プロジェクトのセットアップ:**
 
 1.1 **Hardhatプロジェクトの初期化:**
 ```bash
 $ cd packages/contracts
-$ npm install --save-dev hardhat
-$ npm install --save-dev @nomicfoundation/hardhat-toolbox
+$ yarn add --dev @nomicfoundation/hardhat-toolbox @nomicfoundation/hardhat-ignition @nomicfoundation/hardhat-ignition-ethers @nomicfoundation/hardhat-network-helpers @nomicfoundation/hardhat-chai-matchers @nomicfoundation/hardhat-ethers @nomicfoundation/hardhat-verify chai@4 ethers hardhat-gas-reporter solidity-coverage @typechain/hardhat typechain @typechain/ethers-v6
 ```
 
 1.2 **OpenZeppelinのインストール:**
 ```bash
-$ npm install --save-dev @openzeppelin/contracts
+$ yarn add --dev @openzeppelin/contracts
 ```
 
 1.3 **その他ツールのインストール:**
 ```bash
-$ npm install --save-dev dotenv
+$ yarn add --dev dotenv
 ```
 
 ### 2. **ERC20トークンの作成:**
@@ -119,7 +106,17 @@ async function main() {
     const myToken = await ethers.deployContract("MyToken", [1000000]);
     await myToken.waitForDeployment();
 
-    console.log("MyToken deployed to:", await myToken.owner());
+    console.log("MyToken deployed to:", await myToken.getAddress());
+    console.log("MyToken deployed by:", await myToken.owner());
+
+    const txReceipt = await myToken.deploymentTransaction().wait();
+
+    console.log("> transaction hash:", txReceipt.hash);
+    console.log("> contract address:", myToken.target);
+    console.log("> block number:", txReceipt.blockNumber);
+    console.log("> account:", txReceipt.from);
+    console.log("> balance:", ethers.formatEther(await ethers.provider.getBalance(txReceipt.from)));
+    console.log("> gas price:", ethers.formatUnits(txReceipt.gasPrice, 'gwei'), "gwei");
 }
 
 main().catch((error) => {
@@ -143,7 +140,7 @@ $ npx hardhat node
 別のターミナルで以下のコマンドを実行して、MyToken Contractを開発サーバにデプロイします。
 
 ```bash
-npx hardhat run scripts/deploy.js --network localhost
+$ npx hardhat run scripts/deploy.js --network localhost
 ```
 
 ~~### 5. **トークンバランスの確認:**~~

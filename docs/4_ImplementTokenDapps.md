@@ -11,7 +11,7 @@ ERC20 Tokenの残高確認と送金ができる機能を持つDappsの作成方�
 
 ### 2. **ERC20トークンのABIの保存**:
 
-まず最初に、`src/contracts`ディレクトリを作成し、その中にtruffleで生成された`../contracts/build/contracts/ERC20.json`をコピーします。
+まず最初に、`src/contracts`ディレクトリを作成し、その中にHardhatで生成された`../contracts/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json`をコピーします。
 
 この`ERC20.json`ファイルの中に、Javascriptやその他のクライアントライブラリからContractにアクセスするためのインターフェース情報（メソッド名やメソッドのID、必要なパラメータ情報など）が含まれています。これらの情報のことをABI（Application Binary Interface)と呼びます。
 
@@ -19,7 +19,7 @@ ERC20 Tokenの残高確認と送金ができる機能を持つDappsの作成方�
 
 ```bash
 mkdir src/contracts
-cp ../contracts/build/contracts/ERC20.json src/contracts/
+cp ../contracts/artifacts/@openzeppelin/contracts/token/ERC20/ERC20.sol/ERC20.json src/contracts/
 ```
 
 なお、ERC20はインターフェース仕様が標準化されているため、以下の内容でファイルを直接生成しても良いです。
@@ -289,6 +289,12 @@ export default TokenComponent;
 #### 3-1.コードの簡単な説明：
 
 loadContractメソッドを定義して、このメソッドのなかでERC20Token Contractに接続しています。ここではTokenの残高を取得しています。ContractへのやりとりはWeb3ライブラリを利用しています。Web3ライブラリにMetamaskが提供する`provider`を指定することでweb3ライブラリとMetamaskが連携して動作できるようになります。
+
+Web3ライブラリをインストールします。
+
+```bash
+yarn add web3@4.10.0
+```
 
 loadContractメソッドは`Contract Address`を入力して、`Load Contract`ボタンが押されたときに実行されます。
 ```Javascript

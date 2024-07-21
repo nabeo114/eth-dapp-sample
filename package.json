@@ -12,7 +12,7 @@
     "packages": ["packages/*"],
     "nohoist": ["**/contracts", "**/contracts/**"]
   },
-  "keywords": ["Ethereum", "react", "truffle", "dapps"],
+  "keywords": ["Ethereum", "react", "hardhat", "dapps"],
   "author": "Yukishige Nakajo <nakajo@chaintope.com> (http://y-nakajo.hatenablog.com/)",
   "license": "MIT",
   "dependencies": {

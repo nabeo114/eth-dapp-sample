@@ -5,7 +5,7 @@ Sepoliaテストネットにデプロイするためには手数料となるSepo
 
 次に、Sepoliaに接続するためにInfura.ioのサービスに登録して利用する手段を説明します。
 
-最後にTruffleにSepoliaと接続するためのネットワーク設定と、Infura.ioとMetamaskのアカウントを利用する設定を追加して、SepoliaにMyTokenをデプロイする手順を説明します。
+最後にHardhatにSepoliaと接続するためのネットワーク設定と、Infura.ioとMetamaskのアカウントを利用する設定を追加して、SepoliaにMyTokenをデプロイする手順を説明します。
 
 ### 1. **ChromeにMetamaskプラグインをインストール**:
    - [Metamaskの公式ウェブサイト](https://metamask.io/download.html)またはChromeウェブストアからMetamaskプラグインをダウンロードしてインストールします。
