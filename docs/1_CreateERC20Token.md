@@ -137,7 +137,6 @@ main().catch((error) => {
 4.1 **開発ノードの起動:**
 
 以下のコマンドを実行してHardhatに内蔵されているEthereumの開発用ノードを起動します。
-
 ```bash
 $ npx hardhat node
 ```
@@ -145,47 +144,59 @@ $ npx hardhat node
 4.2 **トークンのデプロイ:**
 
 別のターミナルで以下のコマンドを実行して、MyToken Contractを開発サーバにデプロイします。
-
 ```bash
 $ npx hardhat run scripts/deploy.js --network localhost
 ```
 
-~~### 5. **トークンバランスの確認:**~~
+### 5. **トークンバランスの確認:**
 
-~~開発ノードに`MyToken`がデプロイされました。実際にデプロイされたContractを操作してみます。
-まずは、`MyToken`のデプロイアカウントである`accounts[0]`に初期のTokenが発行されていることを確認します。~~
+開発ノードに`MyToken`がデプロイされました。実際にデプロイされたContractを操作してみます。
+まずは、`MyToken`のデプロイアカウントである`Account #0`に初期のTokenが発行されていることを確認します。
 
-~~5.1 **バランスの確認:**~~
+以下のコマンドを実行してhardhat consoleを起動します。
 ```bash
-truffle(develop)> let instance = await MyToken.deployed()
-truffle(develop)> let balance = await instance.balanceOf(accounts[0])
-truffle(develop)> balance.toString()
+$ npx hardhat console
 ```
 
-~~### 6. **トークンの送金とバランスの確認:**~~
+以降は、hardhat console上で実行する手順を示しています。
 
-~~ここではMyTokenを別のアカウントに送金してみます。Truffleの開発ノードは初期状態で10個のアカウントが自動生成されます。~~
-
-~~最初は0番目のアカウントのみが`MyToken`を持っているので、１番目のアカウントにも送金します。~~
-
-~~6.1 **トークンの送金:**~~
+5.1 **バランスの確認:**
 ```bash
-truffle(develop)> await instance.transfer(accounts[1], 1000)
+> let MyToken = await ethers.getContractFactory("MyToken");
+> let myToken = await MyToken.attach("<contract_address>");
+> let balance = await myToken.balanceOf("<account_address>");
+> balance.toString();
 ```
+`<contract_address>`には、デプロイされたコントラクトのアドレスを指定します。
+`<account_address>`には、`Account #0`のアドレスを指定します。
 
-~~6.2 **バランスの確認:**~~
+### 6. **トークンの送金とバランスの確認:**
 
-~~以下で実際に1番目のアカウントに`MyToken`が送金されたか確認します。~~
-~~0番目のアカウントの`MyToken`残高が減少し、1番目のアカウントの残高が増えていることを確認してください。~~
+ここではMyTokenを別のアカウントに送金してみます。Hardhatの開発ノードは初期状態で20個のアカウントが自動生成されます。
+
+最初は0番目のアカウントのみが`MyToken`を持っているので、1番目のアカウントにも送金します。
+
+6.1 **トークンの送金:**
+```bash
+> await myToken.transfer("<recipient_address>", 1000);
+```
+`<recipient_address>`には、`Account #1`のアドレスを指定します。
+
+6.2 **バランスの確認:**
+
+以下で実際に1番目のアカウントに`MyToken`が送金されたか確認します。
+0番目のアカウントの`MyToken`残高が減少し、1番目のアカウントの残高が増えていることを確認してください。
 
 ```bash
-truffle(develop)> let balance0 = await instance.balanceOf(accounts[0])
-truffle(develop)> let balance1 = await instance.balanceOf(accounts[1])
-truffle(develop)> balance0.toString()
-truffle(develop)> balance1.toString()
+> let balance0 = await myToken.balanceOf("<account_address>");
+> let balance1 = await myToken.balanceOf("<recipient_address>");
+> balance0.toString();
+> balance1.toString();
 ```
+`<account_address>`には、`Account #0`のアドレスを指定します。
+`<recipient_address>`には、`Account #1`のアドレスを指定します。
 
-~~これらの手順に従うことで、TruffleとOpenZeppelinを使用してERC20トークンを作成し、ローカルの開発ノードにデプロイし、トークンの送金とバランスの確認を行うことができます。~~
+これらの手順に従うことで、HardhatとOpenZeppelinを使用してERC20トークンを作成し、ローカルの開発ノードにデプロイし、トークンの送金とバランスの確認を行うことができます。
 
 next&gt;&gt; [2.SepoliaテストネットにContractをデプロイ](./2_DeploySepolia.md)
 
