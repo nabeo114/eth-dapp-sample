@@ -117,13 +117,19 @@ async function main() {
     console.log("MyToken deployed by:", await myToken.owner());
 
     const txReceipt = await myToken.deploymentTransaction().wait();
+    const block = await ethers.provider.getBlock(txReceipt.blockNumber);
 
+    console.log("Deploying 'MyToken'");
+    console.log("-------------------");
     console.log("> transaction hash:", txReceipt.hash);
-    console.log("> contract address:", myToken.target);
+    console.log("> contract address:", txReceipt.contractAddress);
     console.log("> block number:", txReceipt.blockNumber);
+    console.log("> block timestamp:", block.timestamp);
     console.log("> account:", txReceipt.from);
     console.log("> balance:", ethers.formatEther(await ethers.provider.getBalance(txReceipt.from)));
+    console.log("> gas used:", txReceipt.gasUsed.toString());
     console.log("> gas price:", ethers.formatUnits(txReceipt.gasPrice, 'gwei'), "gwei");
+    console.log("> total cost:", ethers.formatEther(BigInt(txReceipt.gasPrice) * BigInt(txReceipt.gasUsed)), "ETH");
 }
 
 main().catch((error) => {

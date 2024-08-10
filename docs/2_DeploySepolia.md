@@ -41,6 +41,8 @@ $ npx hardhat run scripts/deploy.js --network sepolia
 
 - ターミナルに表示されるログから、Contract Addressをメモしておく。
 
+![Deploy Log](images/deploy_sepolia_log.png)
+
 ### 6. **etherscanで確認**:
 - [Sepolia Testnet Etherscan](https://sepolia.etherscan.io/)にアクセスし、Contract Addressを使ってデプロイメントを確認します。
 
