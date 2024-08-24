@@ -26,7 +26,7 @@ $ touch .env
 ```
 ```
 INFURA_API_KEY='your api key'
-PRIVATE_KEY='your private key'
+ACCOUNT_PRIVATE_KEY='your private key'
 ```
 - `.env`ファイルに、メモしておいたAPI Keyと秘密鍵を設定します。
 
